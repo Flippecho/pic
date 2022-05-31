@@ -1,0 +1,50 @@
+Restock every siToyQoh to 200 at the very beginning...
+
+To insert an order, you need the information as follows:
+1. cOrderNo can be generated automatically
+2. dOrderDate can be generated randomly
+3. cCartId can be generated automatically(simply use cOrderNo)
+    for table ShoppingCart:
+        1. cToyId can be selected from Toys
+        2. number of toy types is unlimited
+        3. siQty can be generated randomly
+        for table Toys:
+            1. siToyQoh should be updated after Order created
+4. cShopperId can be selected from table Shopper
+5. cShippingModeId can selected from table ShippingMode
+6. mShippingCharges depend on cCountryId and cModelId from table ShippingRate
+7. mGiftWrapCharges depend on cWrapperId from table Wrapper
+8. cOrderProcessed should be character Y if siQty is no bigger than siToyQoh
+    else N
+9. mTotalCost should be sum of mShippingCharges, mGiftWrapCharges and ToyTotal
+    ToyTotal is the summary of mToyRate * siQty 
+10. dExpDelDate should be null if cOrderProcessed is character N
+    else dShipmentDate + iMaxDelDays
+    iMaxDelDays depend on cMode from ShippingMode
+
+After inserting an order, you have to update the information as follows:
+1. for table OrderDetail:
+    1. cOrderNo is equal to cOrderNo in talbe Orders
+    2. cToyId can be selected from Toys
+    3. number of toy types can be generated randomly
+    4. siQty can be generated randomly
+        but it should be no bigger than siToyQoh in table Toys
+    5. cGiftWrap is either character Y or character N
+    6. cWrapperId is null if cGiftWrap is N
+        else it can be selected from table Wrapper
+    7. vMessage is null if cGiftWrap is N
+        else if can be selected from table OrderDetail
+    8. mToyCost is equal to mToyRate * siQty
+2. for table Recipient:
+    1. cOrderNo is equal to cOrderNo in table Orders 
+    2. other information can be selected from table Recipient
+3. for table Shipment:
+    1. if not processed, no need to insert a new record
+    2. else:
+        1. cOrderNo is eqaul to cOrderNo in table Orders
+        2. dShipmentDate = dOrderDate + randomDays
+        3. dActualDeliveryDate equals to dShipmentDate + RandomDays or null
+        4. if dActualDeliveryDate is null then cDeliberyStatus is s 
+           else if randomDays <= iMaxDelDays then cDeliberyStatus is d
+           else cDeliberyStatus is o
+ 
