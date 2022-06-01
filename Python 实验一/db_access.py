@@ -13,12 +13,24 @@ def create_database():
     # 2. 创建游标对象
     cursor = connection.cursor()
 
-    fd = open('createDB.sql', 'r', encoding='utf-8')
-    sql_list = fd.read().split(';')
+    # 3. 执行SQL操作
+    sql = "create table if not exists Records(" \
+          "Symbol varchar(10)   not null, " \
+          "Date   date          not null," \
+          "Open   decimal(8, 4) not null," \
+          "Close  decimal(8, 4) not null," \
+          "High   decimal(8, 4) not null," \
+          "Low    decimal(8, 4) not null," \
+          "primary key (Symbol, Date)" \
+          ");"
+    cursor.execute(sql)
 
-    for sql in sql_list:
-        # 3. 执行SQL操作
-        cursor.execute(sql)
+    sql = "create table if not exists Stocks(" \
+          "Symbol     varchar(10)," \
+          "LastUpdate date not null" \
+          ");"
+
+    cursor.execute(sql)
 
     # 4. 提交数据库事物
     connection.commit()
@@ -135,7 +147,8 @@ def select_from_records(stock, days=30):
         cursor.execute(sql, (stock,))
         data = cursor.fetchall()
         for row in data:
-            field = {'Date': datetime.datetime.strptime(row[1], "%Y-%m-%d").date(), 'Open': float(row[2]), 'Close': float(row[3]), 'High': float(row[4]),
+            field = {'Date': datetime.datetime.strptime(row[1], "%Y-%m-%d").date(), 'Open': float(row[2]),
+                     'Close': float(row[3]), 'High': float(row[4]),
                      'Low': float(row[5]), 'Symbol': stock}
             results.append(field)
             if len(results) == days:
